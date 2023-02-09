@@ -1,31 +1,86 @@
 class Book:
-    """ Базовый класс книги. """
-    def __init__(self, name: str, author: str):
-        self.name = name
-        self.author = author
+    """ Базовый класс книги """
+    def __init__(self, name: str, author: str):  # Конструктор базового класса
+        # Инициализируем атрибуты в защищенном виде с нижним подчеркиванием
+        self._name = name
+        self._author = author
 
+    # Задаем в виде свойств атрибуты для их защиты, но при этом чтобы можно было к ним обращаться без "_"
+    @property  # Декоратор свойства для первого атрибута (только getter)
+    def name(self) -> str:  # Даем название и предполагаемый тип данных на выходе
+        """ Возвращает значение атрибута "Название книги" """
+        return self._name
+
+    @property  # Декоратор свойства для второго атрибута (только getter)
+    def author(self) -> str:  # Даем название и предполагаемый тип данных на выходе
+        """ Возвращает значение атрибута "Автор книги" """
+        return self._author
+
+    # Магический метод __str__ можно наследовать, но мы тоже его перегрузим в дочерних классах, потому что можем :)
     def __str__(self):
-        return f"Книга {self.name}. Автор {self.author}"
+        return f"Книга {self.name}. Автор {self.author}"  # Выводит информацию про атрибуты базового класса
 
+    # Магический метод __repr__ нужно обязательно перегружать в дочерних классах, так как в нем нужна информация обо всех атрибутах
     def __repr__(self):
+        # Выводит информация про атрибуты базового класса и наименование класса (динамическое)
         return f"{self.__class__.__name__}(name={self.name!r}, author={self.author!r})"
 
 
-class PaperBook:
-    def __init__(self, name: str, author: str, pages: int):
-        self.name = name
-        self.author = author
+class PaperBook(Book):  # Прописываем базовый класс в скобках чтобы задать наследование
+    """ Подкласс бумажной книги """
+    def __init__(self, name: str, author: str, pages: int):  # В конструкторе оставляем атрибуты базового класса
+        # При помощи super() вытаскиваем атрибуты из базового класса в данный дочерний
+        super().__init__(name, author)
+        # Инициализируем новый атрибут через setter (pages без нижнего подчеркивания)
         self.pages = pages
 
-    def __str__(self):
-        return f"Книга {self.name}. Автор {self.author}"
+    # Задаем в виде свойства атрибут количества страниц
+    @property  # Декоратор свойства для атрибута (getter)
+    def pages(self) -> int:  # Даем название и предполагаемый тип данных на выходе
+        """Возвращает количество страниц в книге"""
+        return self._pages
+
+    @pages.setter  # Декоратор свойства для атрибута (setter)
+    def pages(self, new_pages: int) -> None:  # Задаем дополнительную переменную, на которую меняется значение атрибута
+        """Устанавливает количество страниц в книге"""
+        if not isinstance(new_pages, int):  # Проверяем, что значение целочисленное
+            raise TypeError("Количество страниц должно быть типа int")
+        if new_pages <= 0:  # Проверяем, что значение положительное
+            raise ValueError("Количество страниц должно быть положительным")
+        self._pages = new_pages  # Присваиваем новое проверенное значение
+
+    def __str__(self):  # Перегружаем метод, добавляя атрибут этого класса (страницы) (необязательно)
+        return f"Книга {self.name}. Автор {self.author}. {self.pages} страниц"
+
+    def __repr__(self):  # Перегружаем метод, добавляя атрибут этого класса (страницы) (обязательно)
+        return f"{self.__class__.__name__}(name={self.name!r}, author={self.author!r}, pages={self.pages!r})"
 
 
-class AudioBook:
-    def __init__(self, name: str, author: str, duration: float):
-        self.name = name
-        self.author = author
+class AudioBook(Book):  # Прописываем базовый класс в скобках чтобы задать наследование
+    """ Подкласс аудиокниги """
+    def __init__(self, name: str, author: str, duration: float):  # В конструкторе оставляем атрибуты базового класса
+        # При помощи super() вытаскиваем атрибуты из базового класса в данный дочерний
+        super().__init__(name, author)
+        # Инициализируем новый атрибут через setter (duration без нижнего подчеркивания)
         self.duration = duration
 
-    def __str__(self):
-        return f"Книга {self.name}. Автор {self.author}"
+    # Задаем в виде свойства атрибут длительности аудиокниги
+    @property  # Декоратор свойства для атрибута (getter)
+    def duration(self) -> float:  # Даем название и предполагаемый тип данных на выходе
+        """Возвращает длительность аудиокниги"""
+        return self._duration
+
+    @duration.setter # Декоратор свойства для атрибута (setter)
+    def duration(self, new_duration: float) -> None:  # Задаем дополнительную переменную, на которую меняется значение атрибута
+        """Устанавливает длительность аудиокниги"""
+        if not isinstance(new_duration, float): # Проверяем, что значение типа float
+            raise TypeError("Длительность аудиокниги должна быть типа float")
+        if new_duration <= 0:  # Проверяем, что значение положительное
+            raise ValueError("Длительность аудиокниги должна быть положительным")
+        self._duration = new_duration  # Присваиваем новое проверенное значение
+
+    def __str__(self):  # Перегружаем метод, добавляя атрибут этого класса (длительность) (необязательно)
+        return f"Аудиокнига {self.name}. Автор {self.author}. {self.duration} часов"
+
+    def __repr__(self):  # Перегружаем метод, добавляя атрибут этого класса (длительность) (обязательно)
+        return f"{self.__class__.__name__}(name={self.name!r}, author={self.author!r}, duration={self.duration!r})"
